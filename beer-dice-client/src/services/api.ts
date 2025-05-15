@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://localhost:5127/api'; // Adjust if your backend uses a different port
+const API_BASE_URL = 'http://localhost:5127/api'; // Adjust if your backend uses a different port
 
 export interface Team {
   teamId: number;
@@ -12,7 +12,7 @@ export interface Player {
   playerId: number;
   name: string;
   teamId: number;
-  team?: Team;
+  teamName?: string;
 }
 
 // ===== TEAM =====

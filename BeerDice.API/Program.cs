@@ -8,14 +8,20 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BeerDiceContext>(options =>
     options.UseSqlite("Data Source=beerdice.db"));
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
+builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
     {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        policy.WithOrigins("http://localhost:3000") // React app URL
+                .AllowAnyHeader()
+                .AllowAnyMethod();
     });
+});
 builder.Services.AddAuthorization();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 
 var app = builder.Build();
 
@@ -27,7 +33,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthorization();
+
 app.MapControllers();
 
 // Seed test data

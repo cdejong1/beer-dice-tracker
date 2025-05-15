@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BeerDice.API.Data;
 using BeerDice.API.Models;
+using BeerDice.API.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeerDice.API.Controllers
@@ -18,10 +19,28 @@ namespace BeerDice.API.Controllers
 
         // GET: api/team
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
+        public async Task<ActionResult<IEnumerable<TeamDto>>> GetTeams()
         {
-            return await _context.Teams.Include(t => t.Players).ToListAsync();
+            var teams = await _context.Teams
+                .Include(t => t.Players)
+                .ToListAsync();
+
+            var teamDtos = teams.Select(t => new TeamDto
+            {
+                TeamId = t.TeamId,
+                Name = t.Name,
+                Players = t.Players.Select(p => new PlayerDto
+                {
+                    PlayerId = p.PlayerId,
+                    Name = p.Name,
+                    TeamId = t.TeamId,
+                    TeamName = t.Name
+                }).ToList()
+            });
+
+            return Ok(teamDtos);
         }
+
 
         // GET: api/team/5
         [HttpGet("{id}")]
